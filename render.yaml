@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: care-circle
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATA_DIR
+        value: /var/data/care-circle
+      - key: NODE_VERSION
+        value: 20
+    disk:
+      name: care-circle-data
+      mountPath: /var/data
+      sizeGB: 1

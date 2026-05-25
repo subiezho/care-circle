@@ -13,6 +13,10 @@ app.use(express.json());
 
 app.use("/api", apiRouter);
 
+app.get("/healthz", (_req, res) => {
+  res.status(200).json({ ok: true });
+});
+
 const publicDir = path.join(__dirname, "..", "public");
 app.use(express.static(publicDir));
 
