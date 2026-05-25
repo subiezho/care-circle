@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#1a5f4a" />
+    <meta name="description" content="Семейный штаб ухода за близкими — журнал, задачи, отчёт для врача" />
+    <title>Үйдегі күтім — Семейный мост</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Landing -->
+      <section id="screen-landing" class="screen active">
+        <header class="hero">
+          <p class="badge">MVP · Казахстан</p>
+          <h1>Үйдегі күтім</h1>
+          <p class="subtitle">Семейный штаб ухода за родителями — без хаоса в WhatsApp</p>
+        </header>
+
+        <div class="card">
+          <h2>Создать семейный круг</h2>
+          <form id="form-create">
+            <label>Название круга <input name="circleName" placeholder="Семья Ахметовых" required /></label>
+            <label>Имя близкого (кого берём на учёт) <input name="lovedOneName" placeholder="Мама" required /></label>
+            <label>Ваше имя <input name="coordinatorName" placeholder="Дана" required /></label>
+            <button type="submit" class="btn primary">Создать круг</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Войти по коду</h2>
+          <form id="form-join">
+            <label>Код приглашения <input name="code" placeholder="ABC123" maxlength="6" required class="code-input" /></label>
+            <label>Ваше имя <input name="name" placeholder="Алмас" required /></label>
+            <label>Роль
+              <select name="role">
+                <option value="caregiver">Ухаживаю на месте</option>
+                <option value="coordinator">Координатор (из другого города)</option>
+                <option value="observer">Помогаю иногда</option>
+              </select>
+            </label>
+            <button type="submit" class="btn secondary">Присоединиться</button>
+          </form>
+        </div>
+
+        <p class="disclaimer">
+          ⚠️ Информационный сервис, не замена врача. При угрозе жизни — <strong>103</strong>.
+        </p>
+      </section>
+
+      <!-- Dashboard -->
+      <section id="screen-dashboard" class="screen">
+        <header class="dash-header">
+          <div>
+            <p class="circle-code">Код: <strong id="display-code"></strong>
+              <button type="button" id="btn-copy-code" class="btn-link">копировать</button>
+            </p>
+            <h1 id="display-loved"></h1>
+            <p id="display-circle" class="muted"></p>
+          </div>
+          <button type="button" id="btn-leave" class="btn ghost">Выйти</button>
+        </header>
+
+        <div id="escalation-banner" class="banner alert hidden"></div>
+
+        <nav class="tabs" role="tablist">
+          <button type="button" data-tab="home" class="tab active">Главная</button>
+          <button type="button" data-tab="journal" class="tab">Журнал</button>
+          <button type="button" data-tab="tasks" class="tab">Задачи</button>
+          <button type="button" data-tab="scripts" class="tab">Скрипты</button>
+          <button type="button" data-tab="report" class="tab">Врачу</button>
+        </nav>
+
+        <div id="panel-home" class="panel active">
+          <div class="card">
+            <h3>Быстрая отметка сегодня</h3>
+            <div class="symptom-grid" id="quick-symptoms"></div>
+          </div>
+          <div class="card">
+            <h3>Последние записи</h3>
+            <ul id="recent-symptoms" class="list"></ul>
+          </div>
+          <div class="card">
+            <h3>Открытые задачи</h3>
+            <ul id="recent-tasks" class="list"></ul>
+          </div>
+          <div class="card">
+            <h3>Семья в круге</h3>
+            <ul id="member-list" class="list members"></ul>
+          </div>
+        </div>
+
+        <div id="panel-journal" class="panel">
+          <div class="card">
+            <h3>Журнал симптомов и состояния</h3>
+            <form id="form-symptom">
+              <div class="symptom-grid" id="symptom-types"></div>
+              <label>Комментарий (необязательно) <textarea name="note" rows="2" placeholder="Например: рвота утром, отказалась есть"></textarea></label>
+              <button type="submit" class="btn primary">Сохранить запись</button>
+            </form>
+          </div>
+          <ul id="full-symptoms" class="timeline"></ul>
+        </div>
+
+        <div id="panel-tasks" class="panel">
+          <div class="card">
+            <form id="form-task">
+              <label>Задача <input name="title" placeholder="Записать к терапевту" required /></label>
+              <label>Кто делает <input name="assignee" placeholder="Алмас" /></label>
+              <label>Срок <input name="dueDate" type="date" /></label>
+              <button type="submit" class="btn primary">Добавить задачу</button>
+            </form>
+          </div>
+          <ul id="task-list" class="list tasks"></ul>
+        </div>
+
+        <div id="panel-scripts" class="panel">
+          <p class="muted">Готовые фразы для сложных разговоров с родителями и родственниками.</p>
+          <div id="scripts-list"></div>
+        </div>
+
+        <div id="panel-report" class="panel">
+          <div class="card">
+            <p>Краткая сводка за 30 дней для визита к врачу. Распечатайте или покажите с телефона.</p>
+            <button type="button" id="btn-print-report" class="btn primary">Открыть отчёт для печати</button>
+          </div>
+          <div id="report-preview" class="report-preview"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
