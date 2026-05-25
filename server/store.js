@@ -204,3 +204,61 @@ export function buildDoctorReport(family) {
     escalation: checkEscalation(family.symptoms),
   };
 }
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso || "—";
+  return d.toISOString().slice(0, 16).replace("T", " ");
+}
+
+export function buildAIContext(family) {
+  const members = (family.members || [])
+    .map((m) => `- ${m.name} (${m.role}), joined: ${fmtDate(m.joinedAt)}`)
+    .join("\n");
+
+  const symptoms = (family.symptoms || [])
+    .slice(0, 60)
+    .map((s) => {
+      const note = s.note ? `, note: ${s.note}` : "";
+      return `- ${fmtDate(s.createdAt)} | ${s.type} | by ${s.memberName || "unknown"}${note}`;
+    })
+    .join("\n");
+
+  const tasks = (family.tasks || [])
+    .slice(0, 60)
+    .map((t) => {
+      const due = t.dueDate ? `, due: ${t.dueDate}` : "";
+      const assignee = t.assignee ? `, assignee: ${t.assignee}` : "";
+      return `- ${t.title} | status: ${t.status}${assignee}${due}`;
+    })
+    .join("\n");
+
+  const meds = (family.medications || [])
+    .slice(0, 60)
+    .map((m) => {
+      const dose = m.dose ? ` ${m.dose}` : "";
+      const taken = m.takenAt ? `, taken: ${fmtDate(m.takenAt)}` : "";
+      const by = m.recordedBy ? `, by: ${m.recordedBy}` : "";
+      return `- ${m.name}${dose}${taken}${by}`;
+    })
+    .join("\n");
+
+  return [
+    "ДАННЫЕ СЕМЬИ",
+    `Круг: ${family.circleName || "—"}`,
+    `Подопечный: ${family.lovedOneName || "—"}`,
+    `Код круга: ${family.code || "—"}`,
+    "",
+    "УЧАСТНИКИ:",
+    members || "- нет данных",
+    "",
+    "СИМПТОМЫ (новые сверху):",
+    symptoms || "- нет записей",
+    "",
+    "ЗАДАЧИ:",
+    tasks || "- нет задач",
+    "",
+    "ЛЕКАРСТВА:",
+    meds || "- нет записей",
+  ].join("\n");
+}

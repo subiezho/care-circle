@@ -343,6 +343,20 @@ textarea {
   font-size: 0.9rem;
 }
 
+.ai-answer {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fafdfb;
+  white-space: pre-wrap;
+  font-size: 0.92rem;
+}
+
+.ai-answer.hidden {
+  display: none;
+}
+
 .report-preview {
   margin-top: 16px;
 }

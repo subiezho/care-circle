@@ -1,0 +1,3 @@
+#cloud-config
+runcmd:
+  - [bash, -lc, "curl -fsSL https://raw.githubusercontent.com/subiezho/care-circle/main/deploy/oracle/bootstrap.sh | sudo bash"]

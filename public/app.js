@@ -24,6 +24,9 @@ let state = {
   memberId: null,
   family: null,
   selectedSymptom: "good",
+  aiQuestionHistory: [],
+  aiCommunicationHistory: [],
+  aiScenariosLoaded: false,
 };
 
 function loadSession() {
@@ -52,7 +55,16 @@ function saveSession() {
 
 function clearSession() {
   localStorage.removeItem("uideKutim");
-  state = { code: null, memberName: null, memberId: null, family: null, selectedSymptom: "good" };
+  state = {
+    code: null,
+    memberName: null,
+    memberId: null,
+    family: null,
+    selectedSymptom: "good",
+    aiQuestionHistory: [],
+    aiCommunicationHistory: [],
+    aiScenariosLoaded: false,
+  };
 }
 
 function showScreen(id) {
@@ -306,6 +318,30 @@ async function loadReportPreview() {
     </div>`;
 }
 
+function renderAiAnswer(targetId, text, isError = false) {
+  const el = document.getElementById(targetId);
+  el.classList.remove("hidden");
+  el.style.borderColor = isError ? "#fecdca" : "var(--border)";
+  el.style.background = isError ? "#fef3f2" : "#fafdfb";
+  el.textContent = text;
+}
+
+async function loadAiScenarios() {
+  if (state.aiScenariosLoaded) return;
+  const select = document.getElementById("ai-scenario");
+  select.innerHTML = "<option>Загрузка...</option>";
+  try {
+    const scenarios = await api("/ai/scenarios");
+    select.innerHTML = scenarios
+      .map((s) => `<option value="${s.id}">${escapeHtml(s.title)} — ${escapeHtml(s.description)}</option>`)
+      .join("");
+    state.aiScenariosLoaded = true;
+  } catch (err) {
+    select.innerHTML = '<option value="custom">Своя ситуация</option>';
+    renderAiAnswer("ai-communication-answer", err.message, true);
+  }
+}
+
 function openPrintReport() {
   const area = document.getElementById("report-print-area");
   if (!area) {
@@ -328,6 +364,7 @@ function setupTabs() {
       document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
       tab.classList.add("active");
       document.getElementById(`panel-${tab.dataset.tab}`).classList.add("active");
+      if (tab.dataset.tab === "ai") await loadAiScenarios();
       if (tab.dataset.tab === "scripts") await loadScripts();
       if (tab.dataset.tab === "report") await loadReportPreview();
     });
@@ -422,6 +459,56 @@ document.getElementById("form-task").addEventListener("submit", async (e) => {
     toast("Задача добавлена");
   } catch (err) {
     toast(err.message);
+  }
+});
+
+document.getElementById("form-ai-question").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const question = document.getElementById("ai-question-input").value.trim();
+  if (!question) return;
+
+  try {
+    const data = await api("/ai/question", {
+      method: "POST",
+      body: JSON.stringify({
+        familyCode: state.code,
+        question,
+        history: state.aiQuestionHistory,
+      }),
+    });
+    state.aiQuestionHistory.push({ role: "user", content: question });
+    state.aiQuestionHistory.push({ role: "assistant", content: data.answer });
+    state.aiQuestionHistory = state.aiQuestionHistory.slice(-10);
+    renderAiAnswer("ai-question-answer", data.answer);
+    toast("Ответ готов");
+  } catch (err) {
+    renderAiAnswer("ai-question-answer", err.message, true);
+  }
+});
+
+document.getElementById("form-ai-communication").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const scenarioId = document.getElementById("ai-scenario").value;
+  const userMessage = document.getElementById("ai-communication-input").value.trim();
+
+  try {
+    const data = await api("/ai/communication", {
+      method: "POST",
+      body: JSON.stringify({
+        scenarioId,
+        userMessage,
+        history: state.aiCommunicationHistory,
+      }),
+    });
+    if (userMessage) {
+      state.aiCommunicationHistory.push({ role: "user", content: userMessage });
+    }
+    state.aiCommunicationHistory.push({ role: "assistant", content: data.advice });
+    state.aiCommunicationHistory = state.aiCommunicationHistory.slice(-10);
+    renderAiAnswer("ai-communication-answer", data.advice);
+    toast("Совет готов");
+  } catch (err) {
+    renderAiAnswer("ai-communication-answer", err.message, true);
   }
 });
 

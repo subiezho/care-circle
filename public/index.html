@@ -68,6 +68,7 @@
           <button type="button" data-tab="home" class="tab active">Главная</button>
           <button type="button" data-tab="journal" class="tab">Журнал</button>
           <button type="button" data-tab="tasks" class="tab">Задачи</button>
+          <button type="button" data-tab="ai" class="tab">ИИ</button>
           <button type="button" data-tab="scripts" class="tab">Скрипты</button>
           <button type="button" data-tab="report" class="tab">Врачу</button>
         </nav>
@@ -113,6 +114,33 @@
             </form>
           </div>
           <ul id="task-list" class="list tasks"></ul>
+        </div>
+
+        <div id="panel-ai" class="panel">
+          <div class="card">
+            <h3>Спросить ИИ по истории семьи</h3>
+            <form id="form-ai-question">
+              <label>Вопрос
+                <textarea id="ai-question-input" rows="3" placeholder="Например: когда в последний раз была тошнота?" required></textarea>
+              </label>
+              <button type="submit" class="btn primary">Спросить</button>
+            </form>
+            <div id="ai-question-answer" class="ai-answer hidden"></div>
+          </div>
+
+          <div class="card">
+            <h3>Сложные разговоры</h3>
+            <form id="form-ai-communication">
+              <label>Сценарий
+                <select id="ai-scenario"></select>
+              </label>
+              <label>Ситуация / уточнение
+                <textarea id="ai-communication-input" rows="3" placeholder="Опиши, что именно происходит"></textarea>
+              </label>
+              <button type="submit" class="btn secondary">Получить совет</button>
+            </form>
+            <div id="ai-communication-answer" class="ai-answer hidden"></div>
+          </div>
         </div>
 
         <div id="panel-scripts" class="panel">

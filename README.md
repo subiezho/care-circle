@@ -64,3 +64,19 @@ npm run dev
 ## Данные
 
 Все данные хранятся локально в `server/data/database.json`. Для продакшена нужны HTTPS, авторизация и хостинг в РК с учётом закона о персональных данных.
+
+## Бесплатный 24/7 деплой (Oracle Always Free)
+
+В репозитории есть готовые скрипты:
+
+- `deploy/oracle/bootstrap.sh` — первичная установка и запуск как systemd service
+- `deploy/oracle/update.sh` — обновление после новых коммитов
+- `deploy/oracle/cloud-init.yml` — cloud-init для автозапуска при создании VM
+
+Минимальные шаги:
+
+1. Создайте VM в Oracle Cloud Free Tier (лучше Ubuntu/Oracle Linux, shape Always Free).
+2. В metadata `user_data` вставьте содержимое `deploy/oracle/cloud-init.yml` (или выполните `bootstrap.sh` вручную).
+3. Откройте входящий порт `80` в OCI Security List/NSG (и на самой VM, если firewall включён).
+
+После этого сайт доступен по `http://<PUBLIC_IP>/`.

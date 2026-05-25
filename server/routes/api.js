@@ -9,8 +9,10 @@ import {
   buildDoctorReport,
   checkEscalation,
 } from "../store.js";
+import aiRouter from "./ai.js";
 
 const router = Router();
+router.use("/ai", aiRouter);
 
 router.post("/families", (req, res) => {
   const { circleName, lovedOneName, coordinatorName } = req.body || {};
